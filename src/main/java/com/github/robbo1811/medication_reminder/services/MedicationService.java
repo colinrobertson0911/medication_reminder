@@ -9,7 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service(value = "medicationService")
@@ -22,9 +24,8 @@ public class MedicationService {
 		return medicationDao.findByNameAndDosage(name, dosage);
 	}
 
-	public Page<Medication> findAll(int page, int size) {
-		Pageable pageRequest = PageRequest.of(page, size);
-		return medicationDao.findAll(pageRequest);
+	public List<Medication> findAll() {
+		return medicationDao.findAll();
 	}
 
 	public Medication save(Medication medication) {
@@ -41,7 +42,7 @@ public class MedicationService {
 	
 	public int removePillsFromPillsLeft(int pillsLeft, Long medicationId) {
 		Medication medication = retrieveById(medicationId).get();
-		Date timeTaken = medication.getTimeToTake();
+		LocalTime timeTaken = medication.getTimeToTake();
 		int totalPills = medication.getPillsLeft();
 		int pillsTaken = medication.getQuantity();
 		if (timeTaken == medication.getTimeToTake()) {
@@ -50,7 +51,7 @@ public class MedicationService {
 		return pillsLeft;
 	}
 
-	public boolean refillReminder(int pillsLeft, Long medicationId) {
+	public boolean refillReminder(Long medicationId) {
 		Medication medication = retrieveById(medicationId).get();
 		int totalPills = medication.getPillsLeft();
 		if (totalPills < 7) {
@@ -59,7 +60,7 @@ public class MedicationService {
 		return false;
 	}
 
-	public Medication update(long medicationId, String name, String dosage) {
+	public Medication update(long medicationId, String name, String dosage, String condition, int timesAWeek, int timesADay, int quantity) {
 		Medication medication =	retrieveById(medicationId).get();
 		if (name != null) {
 			medication.setName(name);
@@ -67,6 +68,19 @@ public class MedicationService {
 		if (dosage != null) {
 			medication.setDosage(dosage);
 		}
+		if (condition != null) {
+			medication.setCondition(condition);
+		}
+		if (timesAWeek != 0) {
+			medication.setTimesAWeek(timesAWeek);
+		}
+		if (timesADay != 0) {
+			medication.setTimesADay(timesADay);
+		}
+		if (quantity != 0) {
+			medication.setQuantity(quantity);
+		}
+
 		return medicationDao.save(medication);
 	}
 

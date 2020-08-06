@@ -1,63 +1,56 @@
 package com.github.robbo1811.medication_reminder.controller;
 
 
+import com.github.robbo1811.medication_reminder.model.Medication;
+import com.github.robbo1811.medication_reminder.model.Patient;
 import com.github.robbo1811.medication_reminder.services.MedicationService;
 import com.github.robbo1811.medication_reminder.services.PatientService;
+import com.github.robbo1811.medication_reminder.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/patient")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PatientController {
 
 	@Autowired
-	private PatientService patientService;
+	PatientService patientService;
 
 	@Autowired
-	private MedicationService medicationService;
+	UserService userService;
 
-//	@RequestMapping("AllPatients")
-//	public ModelAndView allPatients() {
-//		return new ModelAndView("WEB-INF/allPatients.jsp", "allPatients", patientService.findAll());
-//	}
-//
-//	@RequestMapping("AddPatient")
-//	public ModelAndView addPatient() {
-//		ModelAndView modelAndView = new ModelAndView("WEB-INF/addPatient.jsp");
-//		modelAndView.addObject("patient", new Patient());
-//		modelAndView.addObject("allMedication", medicationService.findAll());
-//		return modelAndView;
-//	}
-//
-//	@PostMapping("AddPatientSubmit")
-//	public ModelAndView addPatientSubmit(@ModelAttribute("patient") Patient patient) {
-//		patientService.save(patient);
-//		return new ModelAndView("forward:/AllPatients");
-//	}
-//
-//	@RequestMapping("EditPatient")
-//	public ModelAndView editPatient(@RequestParam("id") Long id) {
-//		Optional<Patient> patient = patientService.findById(id);
-//		if (patient.isEmpty()) {
-//
-//		}
-//		ModelAndView modelAndView = new ModelAndView("WEB-INF/editPatient.jsp", "patient", patient.get());
-//		return modelAndView;
-//	}
-//
-//	@PostMapping("EditPatientSubmit")
-//	public ModelAndView editPatientSubmit(@ModelAttribute("patient") Patient patient) {
-//		patientService.save(patient);
-//		return new ModelAndView("forward:/AllPatients");
-//	}
-//
-//	@RequestMapping("MyMedication")
-//	public ModelAndView myMedication(@RequestParam("patientId") Long patientId, HttpSession session) {
-//		session.getAttribute("patientId");
-//		Patient patient = patientService.findById(patientId).get();
-//		patient.getMedication();
-//		ModelAndView modelAndView = new ModelAndView("WEB-INF/myMedication.jsp", "allMedication",
-//				patient.getMedication());
-//		return modelAndView;
-//	}
+	@GetMapping("/AllPatients")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<Patient>> allPatients(){
+		return ResponseEntity.ok(patientService.findAll());
+	}
+
+
+	@PatchMapping("/EditPatient")
+	public ResponseEntity<Patient> editPatient(@RequestBody Patient patient){
+		return ResponseEntity.ok(userService.updatePatient(patient.getUserId(), patient.getUsername(), patient.getFirstname(), patient.getLastname(), patient.getEmail(), patient.getWeight(), patient.getHeight(), patient.getAge()));
+	}
+
+	@GetMapping("/MyMedication/{username}")
+	public ResponseEntity<List<Medication>> myMedication(@PathVariable("username")String username) {
+		Optional<Patient> optionalPatient = patientService.findByUsername(username);
+		Patient patient = optionalPatient.get();
+		List<Medication> myMedication = patient.getMedication();
+		if (patient.getMedication().isEmpty()){
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(myMedication, HttpStatus.OK);
+	}
 
 }

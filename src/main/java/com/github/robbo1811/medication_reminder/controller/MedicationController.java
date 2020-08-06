@@ -10,19 +10,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/medication")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:4200")
 public class MedicationController {
 
 	@Autowired
 	private MedicationService medicationService;
 
 	@GetMapping("/AllMedication")
-	public ResponseEntity<Page<Medication>> allMedication(@RequestParam("page")int page, @RequestParam("size")int size) {
-		return ResponseEntity.ok(medicationService.findAll(page, size)) ;
+	public ResponseEntity<List<Medication>> allMedication() {
+		return ResponseEntity.ok(medicationService.findAll()) ;
 	}
 
 
@@ -38,10 +39,10 @@ public class MedicationController {
 	}
 
 
-	@PutMapping("EditMedication")
+	@PatchMapping("EditMedication")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Medication> updateMedication(@RequestBody Medication medication) {
-		return ResponseEntity.ok(medicationService.update(medication.getMedicationId(), medication.getName(), medication.getDosage()));
+		return ResponseEntity.ok(medicationService.update(medication.getMedicationId(), medication.getName(), medication.getDosage(), medication.getCondition(), medication.getTimesAWeek(), medication.getTimesADay(), medication.getQuantity()));
 	}
 
 }

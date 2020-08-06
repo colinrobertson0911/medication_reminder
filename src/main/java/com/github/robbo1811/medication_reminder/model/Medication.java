@@ -3,6 +3,7 @@ package com.github.robbo1811.medication_reminder.model;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -29,10 +30,10 @@ public class Medication {
 	@Column(nullable = false)
 	private int timesADay;
 
-	@Temporal(TemporalType.TIMESTAMP)
+
 	@Column(name = "timeToTake")
-	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-	private Date timeToTake;
+	@DateTimeFormat(pattern = "HH:mm")
+	private LocalTime timeToTake;
 
 	@Column(nullable = false)
 	private int quantity;
@@ -52,7 +53,7 @@ public class Medication {
 		this.dosage = dosage;
 	}
 
-	public Medication(String name, String dosage, String condition, int timesAWeek, int timesADay, Date timeToTake, int quantity, int pillsLeft, boolean refill) {
+	public Medication(String name, String dosage, String condition, int timesAWeek, int timesADay, LocalTime timeToTake, int quantity, int pillsLeft, boolean refill) {
 		this.name = name;
 		this.dosage = dosage;
 		this.condition = condition;
@@ -112,11 +113,11 @@ public class Medication {
 		this.timesADay = timesADay;
 	}
 
-	public Date getTimeToTake() {
+	public LocalTime getTimeToTake() {
 		return timeToTake;
 	}
 
-	public void setTimeToTake(Date timeToTake) {
+	public void setTimeToTake(LocalTime timeToTake) {
 		this.timeToTake = timeToTake;
 	}
 

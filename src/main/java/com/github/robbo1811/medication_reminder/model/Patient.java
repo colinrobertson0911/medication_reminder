@@ -36,12 +36,15 @@ public class Patient extends User {
 		this.medication = new ArrayList<>();
 	}
 
-	public Patient(String weight, String height, int age, List<Medication> medication) {
+	public Patient(String username, String password, String firstname, String lastname, String email, Role role, String weight, String height, int age) {
+		super(username, password, firstname, lastname, email, role);
 		this.weight = weight;
 		this.height = height;
 		this.age = age;
-		this.medication = medication;
+
 	}
+
+
 
 	public String getWeight() {
 		return weight;

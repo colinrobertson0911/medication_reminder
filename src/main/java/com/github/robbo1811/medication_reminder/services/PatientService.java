@@ -15,9 +15,6 @@ public class PatientService {
 	@Autowired
 	private PatientDao patientDao;
 
-	public Optional<Patient> findByUsernameAndPassword(String username, String password) {
-		return patientDao.findByUsernameAndPassword(username, password);
-	}
 
 	public Optional<Patient> findByUsername(String username) {
 		return patientDao.findByUsername(username);
